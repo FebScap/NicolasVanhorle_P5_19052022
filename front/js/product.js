@@ -1,29 +1,57 @@
+import { addToCart } from "./cartManager.js";
+
+function getId() {
 const url = window.location.href.split("id=");
-const id = url[1];
+return url[1];
+}
 
-let headersList = {
-    "Accept": "application/json"
-   } 
-   fetch(`http://localhost:3000/api/products/${id}`, { 
-     method: "GET",
-     headers: headersList
-   }).then(function(response) {
-     return response.json();
-   }).then(function(data) {
+async function getElement() {
+  let headersList = {
+    Accept: "application/json",
+  };
+  const response = await fetch(`http://localhost:3000/api/products/${getId()}`, {
+    method: "GET",
+    headers: headersList,
+  });
+  return await response.json();
+}
 
-    document.getElementById("title").innerHTML = data.name;
+function writeElement() {
+getElement().then(function (data) {
+  document.getElementById("title").innerHTML = data.name;
 
-    document.getElementById("item__img").src = data.imageUrl;
-    document.getElementById("item__img").alt = data.altTxt;
+  document.getElementById("item__img").src = data.imageUrl;
+  document.getElementById("item__img").alt = data.altTxt;
 
-    document.getElementById("name").innerHTML = data.name;
-    document.getElementById("price").innerHTML = " " + data.price + " ";
-    document.getElementById("description").innerHTML = data.description;
+  document.getElementById("name").innerHTML = data.name;
+  document.getElementById("price").innerHTML = " " + data.price + " ";
+  document.getElementById("description").innerHTML = data.description;
 
-    for (let i in data.colors) {
-        const color = document.createElement("option");
-        color.value = data.colors[i];
-        color.innerHTML = data.colors[i];
-        document.getElementById("colors").appendChild(color);  
-    }
-   })
+  for (let i in data.colors) {
+    const color = document.createElement("option");
+    color.value = data.colors[i];
+    color.innerHTML = data.colors[i];
+    document.getElementById("colors").appendChild(color);
+  }
+});
+}
+
+function sendItemToCart(event) {
+  const quantity = document.getElementById("quantity").value;
+  const color = document.getElementById("colors").value;
+  const id = getId();
+
+  const item = "-" + quantity + "-" + color + "-" + id;
+
+  addToCart(item);
+
+}
+
+function main() {
+  writeElement();
+
+  const button = document.getElementById("addToCart");
+  button.addEventListener("click", sendItemToCart);
+}
+
+main()
