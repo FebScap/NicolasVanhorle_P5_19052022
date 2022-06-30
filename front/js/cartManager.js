@@ -1,5 +1,13 @@
 export function addToCart(item) {
-  localStorage.setItem("cart", getCart(cart) + item);
+  const cart = getCart();
+  const cartItem = cart.find(
+    (element) => element.id == item.id && element.color == item.color
+  );
+
+  if (cartItem) cartItem.quantity += item.quantity;
+  else cart.push(item);
+
+  updateCart(cart);
 }
 
 export function removeFromCart(id) {
@@ -7,11 +15,16 @@ export function removeFromCart(id) {
 }
 
 export function clearCart() {
-  localStorage.clear();
+  updateCart();
 }
 
-export function updateCart() {}
+export function updateCart(cart) {
+  localStorage.setItem("cart", JSON.stringify(cart));
+}
 
-export function getCart(id) {
-  return localStorage.getItem(id);
+/**
+ * @returns {Array}
+ */
+export function getCart() {
+  return JSON.parse(localStorage.getItem("cart")) || [];
 }
