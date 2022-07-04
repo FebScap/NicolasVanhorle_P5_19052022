@@ -1,4 +1,5 @@
 import { getCart } from "./cartManager.js";
+import { removeFromCart } from "./cartManager.js";
 
 /**
  * Fait le rendu d'un produit avec ses données
@@ -65,6 +66,8 @@ function createItem(element) {
   divDelete.appendChild(divDeletetxt);
   settings.appendChild(divDelete);
 
+  //input.addEventListener("click", () => removeFromCart(element.id));
+
   return item;
 }
 
@@ -74,6 +77,17 @@ function main() {
   for (const element of elements) {
     items.appendChild(createItem(element));
   }
+
+  const totalQuantity = document.getElementById("totalQuantity");
+  const totalQuantityTxt = +elements.length;
+  totalQuantity.appendChild((document.createTextNode(totalQuantityTxt)));
+
+  const totalPrice = document.getElementById("totalPrice");
+  let totalPriceTxt = 0;
+  for (const element of elements) {
+    totalPriceTxt += element.price*element.quantity;
+  }
+  totalPrice.appendChild(document.createTextNode(totalPriceTxt));
 }
 
 main();
