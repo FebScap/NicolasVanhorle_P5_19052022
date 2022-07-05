@@ -1,5 +1,4 @@
-import { getCart } from "./cartManager.js";
-import { removeFromCart } from "./cartManager.js";
+import { getCart, removeFromCart, updateQuantity } from "./cartManager.js";
 
 /**
  * Fait le rendu d'un produit avec ses données
@@ -55,39 +54,51 @@ function createItem(element) {
   input.setAttribute("min", "1");
   input.setAttribute("max", "100");
   input.setAttribute("value", element.quantity);
+  input.addEventListener("click", (ev) => {
+    updateQuantity(element.id, +ev.target.value, element.color);
+    render();
+  });
+
   quantity.appendChild(quantityTxt);
   quantity.appendChild(input);
-
+  
   const divDelete = document.createElement("div");
   divDelete.className = "cart__item__content__settings__delete";
   const divDeletetxt = document.createElement("p");
   divDeletetxt.className = "deleteItem";
   divDeletetxt.appendChild(document.createTextNode("Supprimer"));
+  divDeletetxt.addEventListener("click", (ev) => {
+    removeFromCart(element.id, element.color);
+    render();
+  });
   divDelete.appendChild(divDeletetxt);
   settings.appendChild(divDelete);
-
-  //input.addEventListener("click", () => removeFromCart(element.id));
 
   return item;
 }
 
-function main() {
+function render() {
   const items = document.getElementById("cart__items");
   const elements = getCart();
+  items.innerHTML = "";
   for (const element of elements) {
     items.appendChild(createItem(element));
   }
 
   const totalQuantity = document.getElementById("totalQuantity");
-  const totalQuantityTxt = +elements.length;
-  totalQuantity.appendChild((document.createTextNode(totalQuantityTxt)));
+  const totalQuantityTxt = elements.reduce((previous, current) => previous + current.quantity, 0);
+  totalQuantity.textContent = totalQuantityTxt;
 
   const totalPrice = document.getElementById("totalPrice");
   let totalPriceTxt = 0;
   for (const element of elements) {
     totalPriceTxt += element.price*element.quantity;
   }
-  totalPrice.appendChild(document.createTextNode(totalPriceTxt));
+  totalPrice.textContent = totalPriceTxt;
+}
+
+function main() {
+  render();
 }
 
 main();
